@@ -9,11 +9,21 @@ pub struct Config {
     pub ignore_case: bool
 }
 
+const DEFAULT_PATH: &str = "src/file.txt";
+
+fn no_file_path() -> String {
+    println!(
+        "No file_path param detected.\
+        Sets file_path to: {DEFAULT_PATH}"
+    );
+    return String::from(DEFAULT_PATH);
+}
+
 
 impl Config {
-    pub fn build(
-        mut args: impl Iterator<Item = String>
-    ) -> Result<Self, &'static str> {
+    pub fn
+    build(mut args: impl Iterator<Item = String>) -> Result<Self, &'static str>
+    {
         args.next();
         let query = match args.next() {
             Some(arg) => arg,
@@ -21,7 +31,7 @@ impl Config {
         };
         let file_path = match args.next() {
             Some(arg) => arg,
-            None => return Err("Didn't get a file_path string")
+            None => no_file_path()
         };
         let ignore_case = env::var("IGNORE_CASE").is_ok();
         Ok(Self{
