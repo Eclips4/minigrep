@@ -9,6 +9,7 @@ pub struct Config {
     pub ignore_case: bool
 }
 
+
 const DEFAULT_PATH: &str = "src/file.txt";
 
 fn no_file_path() -> String {
@@ -41,6 +42,7 @@ impl Config {
         })
     }
 }
+
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>>{
     let contents = fs::read_to_string(config.file_path)?;
@@ -75,6 +77,15 @@ pub fn search_case_insensitive<'a>(
         .collect()
 }
 
+pub fn insensitive_first_word_match<'a>(query: &str, contents: &'a str) -> &'a str {
+    let query = query.to_lowercase();
+    let find = contents.clone().to_lowercase().find(&query);
+    match find {
+        Some(start_index) => &contents[start_index..(start_index + query.len())],
+        None => &"-1"
+    }
+}
+
 
 #[cfg(test)]
 mod tests{
@@ -90,6 +101,7 @@ Pick three.
 Duct tape.";
         assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
+
     #[test]
     fn case_insensitive(){
         let query = "rUst";
@@ -102,5 +114,27 @@ Trust me.";
             vec!["Rust:", "Trust me."],
             search_case_insensitive(query, contents)
         );
+    }
+
+    #[test]
+    fn find_exist_word_insensitive(){
+        let query = "RUST";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+        assert_eq!("Rust", insensitive_first_word_match(query, contents));
+    }
+
+    #[test]
+    fn find_non_exist_word_insensitive(){
+        let query = "Trusty";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+        assert_eq!("-1", insensitive_first_word_match(query, contents));
     }
 }
