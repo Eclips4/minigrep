@@ -77,12 +77,12 @@ pub fn search_case_insensitive<'a>(
         .collect()
 }
 
-pub fn insensitive_first_word_match<'a>(query: &str, contents: &'a str) -> &'a str {
+pub fn insensitive_first_word_match<'a>(query: &str, contents: &'a str) -> Option<&'a str> {
     let query = query.to_lowercase();
     let find = contents.clone().to_lowercase().find(&query);
     match find {
-        Some(start_index) => &contents[start_index..(start_index + query.len())],
-        None => &"-1"
+        Some(start_index) => Some(&contents[start_index..(start_index + query.len())]),
+        None => None
     }
 }
 
@@ -124,7 +124,7 @@ Rust:
 safe, fast, productive.
 Pick three.
 Trust me.";
-        assert_eq!("Rust", insensitive_first_word_match(query, contents));
+        assert_eq!("Rust", insensitive_first_word_match(query, contents).unwrap());
     }
 
     #[test]
@@ -135,6 +135,6 @@ Rust:
 safe, fast, productive.
 Pick three.
 Trust me.";
-        assert_eq!("-1", insensitive_first_word_match(query, contents));
+        assert_eq!(None, insensitive_first_word_match(query, contents));
     }
 }
