@@ -7,7 +7,9 @@ use search::search;
 
 
 fn run(config: Config) -> () {
-    let contents = fs::read_to_string(config.file_path).unwrap();
+    let contents = fs::read_to_string(config.file_path).unwrap_or_else(
+        |err| panic!("Uncaughted error: {err}")
+    );
     let results = search(&config.query, &contents, config.ignore_case);
     match results {
         Some(lines) => {
